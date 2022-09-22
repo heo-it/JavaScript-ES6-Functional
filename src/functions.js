@@ -1,4 +1,6 @@
 const L = {};
+const nop = Symbol('nop');
+
 // 인자로 전달된 함수를 연속적으로 실행하여 얻은 값을 리턴하는 함수
 const go = (...args) => reduce((a, f) => f(a), args); 
 
@@ -107,9 +109,13 @@ L.map = curry(function *(f, iter) {
 });
 
 
-L.filter = function *(f, iter) {
-	for (const a of iter) if(f(a)) yield a;
-};
+L.filter = curry(function *(f, iter) {
+	for (const a of iter) {
+		const b = go1(a. f);   // Promise
+		if (b instanceof Promise) yield b.then(b => b ? a : Promise.reject(nop));
+		else if (b) yield a;
+	}
+});
 
 L.range = function *(l) {
 	let i = -1;
