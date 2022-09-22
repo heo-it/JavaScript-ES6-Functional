@@ -118,3 +118,5 @@ L.deepFlat = function *f(iter) {
 L.flatMap = curry(pipe(L.map, L.flatten));
 
 const flatten = pipe(L.flatten, takeAll);
+
+const flatMap = curry(pipe(L.map, flatten));
