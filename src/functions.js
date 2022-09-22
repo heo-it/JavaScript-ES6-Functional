@@ -1,4 +1,5 @@
 const L = {};
+const C = {};
 const nop = Symbol('nop');
 
 // 인자로 전달된 함수를 연속적으로 실행하여 얻은 값을 리턴하는 함수
@@ -152,4 +153,4 @@ const join = curry((sep = ',', iter) => reduce((a, b) => `${a}${sep}${b}`, iter)
 
 const flatten = pipe(L.flatten, takeAll);
 
-const flatMap = curry(pipe(L.map, flatten));
+const flatMap = curry(pipe(L.map, flatten));C.reduce = curry((f, acc, iter) => iter ?	reduce(f, acc, [...iter]) :	reduce(f, [...acc]));
