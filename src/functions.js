@@ -100,7 +100,6 @@ L.entries = function *(obj) {
 	for (const k in obj) yield [k, obj[k]];
 };
 
-const join = curry((sep = ',', iter) => reduce((a, b) => `${a}${sep}${b}`, iter));L.flatten = function *(iter) {
 L.flatten = function *(iter) {
   for (const a of iter) {
     if (isIterable(a)) yield *a;
@@ -116,6 +115,8 @@ L.deepFlat = function *f(iter) {
 };
 
 L.flatMap = curry(pipe(L.map, L.flatten));
+
+const join = curry((sep = ',', iter) => reduce((a, b) => `${a}${sep}${b}`, iter));
 
 const flatten = pipe(L.flatten, takeAll);
 
