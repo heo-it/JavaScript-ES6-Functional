@@ -88,3 +88,4 @@ L.range = function *(l) {
 		yield i;
 	}
 };
+const join = curry((sep = ',', iter) => reduce((a, b) => `${a}${sep}${b}`, iter));
