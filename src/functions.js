@@ -88,4 +88,9 @@ L.range = function *(l) {
 		yield i;
 	}
 };
+
+L.entries = function *(obj) {
+	for (const k in obj) yield [k, obj[k]];
+};
+
 const join = curry((sep = ',', iter) => reduce((a, b) => `${a}${sep}${b}`, iter));
