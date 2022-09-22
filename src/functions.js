@@ -1,3 +1,4 @@
+const L = {};
 // 인자로 전달된 함수를 연속적으로 실행하여 얻은 값을 리턴하는 함수
 const go = (...args) => reduce((a, f) => f(a), args); 
 
@@ -62,4 +63,11 @@ const range = (l) => {
 	}
 
 	return res;
+};
+
+L.range = function *(l) {
+	let i = -1;
+	while (++i < l) {
+		yield i;
+	}
 };
