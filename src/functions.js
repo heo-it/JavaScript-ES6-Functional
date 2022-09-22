@@ -162,3 +162,5 @@ const flatMap = curry(pipe(L.map, flatten));
 C.reduce = curry((f, acc, iter) => iter ? 
 	reduce(f, acc, catchNoop([...iter])) : 
 	reduce(f, catchNoop([...acc])));
+
+C.take = curry((l, iter) => take(l, catchNoop([...iter])));
