@@ -16,3 +16,10 @@ const filter = (f, iter) => {
 
 	return res;
 };
+
+const reduce = (f, acc, iter) =>{
+  for (const a of iter){
+      acc = f(acc, a);
+  }
+  return acc;
+};
