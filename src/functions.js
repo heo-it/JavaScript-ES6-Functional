@@ -74,6 +74,9 @@ const take = (l, iter) => {
 	return res;
 };
 
+L.map = function *(f, iter) {
+	for (const a of iter) yield f(a);
+};
 
 L.range = function *(l) {
 	let i = -1;
