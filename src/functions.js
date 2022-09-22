@@ -1,6 +1,10 @@
 const L = {};
 const C = {};
+
 const nop = Symbol('nop');
+function noop() {}  // 아무일도 하지 않는 함수
+const catchNoop = arr =>
+	(arr.forEach(a => a instanceof Promise ? a.catch(noop) : a), arr);   // 받은 array를 그대로 리턴하도록 구현
 
 // 인자로 전달된 함수를 연속적으로 실행하여 얻은 값을 리턴하는 함수
 const go = (...args) => reduce((a, f) => f(a), args); 
@@ -153,4 +157,8 @@ const join = curry((sep = ',', iter) => reduce((a, b) => `${a}${sep}${b}`, iter)
 
 const flatten = pipe(L.flatten, takeAll);
 
-const flatMap = curry(pipe(L.map, flatten));C.reduce = curry((f, acc, iter) => iter ?	reduce(f, acc, [...iter]) :	reduce(f, [...acc]));
+const flatMap = curry(pipe(L.map, flatten));
+
+C.reduce = curry((f, acc, iter) => iter ? 
+	reduce(f, acc, catchNoop([...iter])) : 
+	reduce(f, catchNoop([...acc])));
