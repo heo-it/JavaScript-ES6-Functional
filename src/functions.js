@@ -108,3 +108,5 @@ L.flatten = function *(iter) {
   }
 };
 
+
+const flatten = pipe(L.flatten, takeAll);
