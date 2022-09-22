@@ -108,5 +108,11 @@ L.flatten = function *(iter) {
   }
 };
 
+L.deepFlat = function *f(iter) {
+  for (const a of iter) {
+    if (isIterable(a)) yield *f(a);
+    else yield a;
+  }
+};
 
 const flatten = pipe(L.flatten, takeAll);
