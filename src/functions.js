@@ -2,6 +2,8 @@ const L = {};
 // 인자로 전달된 함수를 연속적으로 실행하여 얻은 값을 리턴하는 함수
 const go = (...args) => reduce((a, f) => f(a), args); 
 
+const go1 = (a, f) => a instanceof Promise ? a.then(f) : f(a);
+
 /**
  go(
   0,
