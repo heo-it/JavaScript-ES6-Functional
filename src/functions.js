@@ -52,16 +52,19 @@ const filter = (f, iter) => {
 	return res;
 };
 
-const reduce = (f, acc, iter) => {
-	if (!iter) {
-	  iter = acc[Symbol.iterator]();
-		acc = iter.next().value;
-	}
-	for (const a of iter) {
-		acc = f(acc, a);
-	}
-	return acc;
-};
+const reduce = curry((f, acc, iter) => {
+  if (!iter) {
+      iter = acc[Symbol.iterator]();
+      acc = iter.next().value;
+  }
+  return go1(acc, function recur(acc) {
+      for (const a of iter) {
+          acc = f(acc, a);
+          if(acc instanceof Promise) return acc.then(recur);
+      }
+      return acc;
+  });
+});
 
 const range = (l) => {
 	let i = -1;
