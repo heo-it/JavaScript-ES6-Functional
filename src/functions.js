@@ -25,6 +25,12 @@ pipe(
 // 함수를 인자로 받아서 다음 인자가 들어올 때까지 실행하지 않고, 두 개 이상의 인자가 들어오는 경우 실행하는 함수
 const curry = f => (a, ..._) => _.length ? f(a, ..._) : (..._) => f(a, ..._);
 
+const takeAll = take(Infinity);
+
+const map_with_take = curry(pipe(L.map, takeAll));
+
+const filter_with_take = curry(pipe(L.filter, takeAll));
+
 const map = (f, iter) => {
 	let res = [];
 	for (const a of iter) {
