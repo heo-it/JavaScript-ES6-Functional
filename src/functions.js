@@ -65,6 +65,16 @@ const range = (l) => {
 	return res;
 };
 
+const take = (l, iter) => {
+	let res = [];
+	for (const a of iter) {
+		res.push(a);
+		if (res.length === l) return res;
+	}
+	return res;
+};
+
+
 L.range = function *(l) {
 	let i = -1;
 	while (++i < l) {
