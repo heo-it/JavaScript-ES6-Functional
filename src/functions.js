@@ -6,3 +6,13 @@ const map = (f, iter) => {
 
 	return res;
 };
+
+const filter = (f, iter) => {
+	let res = [];
+
+	for (const p of iter) {
+		if (f(p)) res.push(p);
+	}
+
+	return res;
+};
