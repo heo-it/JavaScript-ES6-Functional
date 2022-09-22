@@ -10,6 +10,17 @@ const go = (...args) => reduce((a, f) => f(a), args);
 );
  */
 
+// 전달된 함수들을 연속적으로 실행해서 축약한 후 하나의 함수를 리턴하는 함수
+const pipe = (f, ...fs) => (...as) => go(f(...as), ...fs);
+
+/**
+pipe(
+  (a, b) => a + b,
+  a => a + 10,
+  a => 100
+) 
+ */
+
 const map = (f, iter) => {
 	let res = [];
 	for (const a of iter) {
