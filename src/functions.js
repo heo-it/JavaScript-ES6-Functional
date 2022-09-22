@@ -54,18 +54,21 @@ const filter = (f, iter) => {
 	return res;
 };
 
+const head = iter => go1(take(1, iter), ([h]) => h);
+
+const reduceF = (acc, a, f) => 
+	a instanceof Promise ? a.then(a => f(acc, a), e => e === nop ? acc : Promise.reject(e)) : f(acc, a);
+
 const reduce = curry((f, acc, iter) => {
-  if (!iter) {
-      iter = acc[Symbol.iterator]();
-      acc = iter.next().value;
-  }
-  return go1(acc, function recur(acc) {
-      for (const a of iter) {
-          acc = f(acc, a);
-          if(acc instanceof Promise) return acc.then(recur);
-      }
-      return acc;
-  });
+    if (!iter) return reduce(f, head(iter = acc[Symbol.iterator]()), iter);
+
+    return go1(acc, function recur(acc) {
+        for (const a of iter) {
+            acc = reduceF(acc, a, f)
+            if(acc instanceof Promise) return acc.then(recur);
+        }
+        return acc;
+    });
 });
 
 const range = (l) => {
