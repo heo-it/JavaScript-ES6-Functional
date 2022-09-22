@@ -74,6 +74,13 @@ const take = (l, iter) => {
 	return res;
 };
 
+const find = curry((f, iter) => go(
+	iter,
+	L.filter(f),
+	take(1),
+	([a]) => a
+));
+
 L.map = function *(f, iter) {
 	for (const a of iter) yield f(a);
 };
