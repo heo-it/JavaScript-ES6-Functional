@@ -1,0 +1,94 @@
+<html>
+  <body>
+    <script src="https://unpkg.com/fxjs/dist/fx.js"></script>
+
+    <script>
+      const { L, C } = window._;
+
+      const Impt = {
+        payments: {
+          1: [
+            { imp_id: 11, order_id: 1, amount: 15000 },
+            { imp_id: 12, order_id: 2, amount: 25000 },
+            { imp_id: 13, order_id: 3, amount: 10000 }
+          ],
+          2: [
+            { imp_id: 14, order_id: 4, amount: 25000 },
+            { imp_id: 15, order_id: 5, amount: 45000 },
+            { imp_id: 16, order_id: 6, amount: 15000 }
+          ],
+          3: [
+            { imp_id: 17, order_id: 7, amount: 20000 },
+            { imp_id: 18, order_id: 8, amount: 30000 }
+          ],
+          4: [],
+          5: [],
+          //...
+        },
+        getPayments: page => {
+          console.log(`http://..?page=${page}`);
+          return _.delay(1000 * 1, Impt.payments[page]);
+        },
+        cancelPayment: imp_id => Promise.resolve(`${imp_id}: 취소완료`)
+      };
+
+      const DB = {
+        getOrders: ids => _.delay(100, [
+          { id: 1 },
+          { id: 3 },
+          { id: 7 }
+        ])
+      };
+
+      async function job() {
+        /** Step 1.
+         * 결제된 결제 모듈측 payments 모두 가져온다.
+         * 가져온 payments 정보를 하나의 배열로 합친다.
+        */
+        const payments = await _.go(
+          L.range(1, Infinity),
+          L.map(Impt.getPayments),
+          // L.takeWhile(({length}) => length),
+          L.takeUntil(({length}) => length < 3),
+          _.flat
+        );
+
+        console.log(payments);
+        /** Step 2.
+         * DB에서 실제 결제가 완료된 가맹점 측 주문 id(order_id)들을 뽑는다.
+        */
+        const orderIds = await _.go(
+          payments,
+          _.map(payment => payment.order_id),
+          DB.getOrders,
+          _.map(({id}) => id)
+        );
+        console.log(orderIds);
+
+        /** Step 3.
+         * 결재 모듈의 payments와 가맹점의 주문서를 비교해서
+         * 결재를 취소해야할 id를 모아서 결제 취소 api를 호출한다.
+        */
+        await _.go(
+          payments,
+          L.reject(p => orderIds.includes(p.order_id)),
+          L.map(({imp_id}) => imp_id),
+          L.map(Impt.cancelPayment),
+          _.each(console.log)
+        );
+      }
+
+      /** Step 4.
+       * 5초에 한번만 한다.
+       * 그런데 만일 job이 5초보다 더 걸리면, job이 끝날 때 까지 기다렸다 바로 실행함.
+      */
+     (function recur(){
+        Promise.all([
+          _.delay(5000, undefined),
+          job()
+        ]).then(recur());
+     })();
+
+    </script>
+  </body>
+</html>
