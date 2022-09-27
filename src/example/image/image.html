@@ -173,7 +173,7 @@
       $.findAll('.remove'),
       // e.currnetTarget을 미리 구조분해 해놓으면 상황에 따라 target이 달라지는 경우를 막을 수 있음.
       $.on('click', async ({ currentTarget }) =>
-        await Ui.confirm('정말 삭제하시겠습니까?') &&
+        await Ui.alert('정말 삭제하시겠습니까?') &&
           _.go(
             currentTarget,
             $.closest('.image'),
@@ -181,44 +181,97 @@
 
     const Ui = {};
 
-    Ui.confirm = msg => new Promise(resolve => _.go(`
-      <div class="confirm">
-        <div class="body">
-          <div class="msg">${msg}</div>
-          <div class="buttons">
-            <button type="button" class="cancel">취소</button>
-            <button type="button" class="ok">확인</button>
+    Ui.message = _.curry((btns, msg) => new Promise(resolve => _.go(
+      `
+        <div class="confirm">
+          <div class="body">
+            <div class="msg">${msg}</div>
+            <div class="buttons">
+              ${_.strMap(btn => `
+                  <button type="button" class="${btn.type}">${btn.name}</button>
+                `, btns)}
+            </div>
           </div>
         </div>
-      </div>
-    `,
-    $.el,
-    $.append($.qs('body')),
-    _.tap(console.log),
-    _.tap(
-      $.find('.ok'),
-      $.on('click', e => _.go(
-        e.currentTarget,
-        $.closest('.confirm'),
-        $.remove,
-        _ => resolve(true)
-      ))),
-    _.tap(
-      $.find('.cancel'),
-      $.on('click', e => _.go(
-        e.currentTarget,
-        $.closest('.confirm'),
-        $.remove,
-        _ => resolve(false)
-      )))
+      `,
+      $.el,
+      $.append($.qs('body')),
+      ..._.map(btn => _.tap(
+        $.find(`.${btn.type}`),
+        $.on('click', e => _.go(
+          e.currentTarget,
+          $.closest('.confirm'),
+          $.remove,
+          _ => resolve(btn.value)
+        ))), btns),
+    )));
+
+    /*
+    Ui.confirm = msg => new Promise(resolve => _.go(
+      `
+        <div class="confirm">
+          <div class="body">
+            <div class="msg">${msg}</div>
+            <div class="buttons">
+              <button type="button" class="cancel">취소</button>
+              <button type="button" class="ok">확인</button>
+            </div>
+          </div>
+        </div>
+      `,
+      $.el,
+      $.append($.qs('body')),
+      _.tap(
+        $.find('.ok'),
+        $.on('click', e => _.go(
+          e.currentTarget,
+          $.closest('.confirm'),
+          $.remove,
+          _ => resolve(true)
+        ))),
+      _.tap(
+        $.find('.cancel'),
+        $.on('click', e => _.go(
+          e.currentTarget,
+          $.closest('.confirm'),
+          $.remove,
+          _ => resolve(false)
+        )))
     ));
 
-    async function f1() {
-      await Ui.confirm('정말 삭제하시겠습니까?');
-      console.log('hi ~~');
-    }
+    Ui.alert = msg => new Promise(resolve => _.go(
+      `
+        <div class="confirm">
+          <div class="body">
+            <div class="msg">${msg}</div>
+            <div class="buttons">
+              <button type="button" class="ok">확인</button>
+            </div>
+          </div>
+        </div>
+      `,
+      $.el,
+      $.append($.qs('body')),
+      _.tap(
+        $.find('.ok'),
+        $.on('click', e => _.go(
+          e.currentTarget,
+          $.closest('.confirm'),
+          $.remove,
+          _ => resolve(true)
+        ))),
+    )); */
 
-    f1();
+    Ui.confirm = Ui.message([
+      { name: '확인', type: 'ok', value: true }
+    ]);
+
+    Ui.alert = Ui.message([
+      { name: '확인', type: 'ok', value: true },
+      { name: '취소', type: 'cancel', value: false }
+    ]);
+
+    Ui.confirm('삭제 하시겠습니까?');
   </script>
 </body>
 </html>
