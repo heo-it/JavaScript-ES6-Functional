@@ -173,18 +173,21 @@
         img.onload = () => resolve(img);
         img.src = img.getAttribute('lazy-src');
       })),
-      lazy => {
-        let r = L.range(Infinity);
-        return _.go(
-          lazy,
-          _.groupBy(_ => Math.floor(r.next().value / limit)),
-          L.values,
-          L.map(L.map(f => f())),
-          L.map(C.takeAll),
-          _.each(_.each($.addClass('fade-in')))
-        );
-      }
+      C.takeAllWithLimit(limit),
+      _.each(_.each($.addClass('fade-in')))
     );
+
+    // 이미지 동시 로딩 외에도, 동시 평가시 부하 조절 할 수 있는 함수로 분리 가능
+    C.takeAllWithLimit = _.curry((limit, iter) => {
+      let r = L.range(Infinity);
+      return _.go(
+        iter,
+        _.groupBy(_ => Math.floor(r.next().value / limit)),
+        L.values,
+        L.map(L.map(f => f())),
+        L.map(C.takeAll),
+      );
+    });
 
     _.go(
       Images.fetch(),
