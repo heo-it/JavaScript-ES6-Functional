@@ -167,20 +167,31 @@
       </div>
     `;
 
+    Images.loader = limit => _.tap(
+      $.findAll('img'),
+      L.map(img => _ => new Promise(resolve => {
+        img.onload = () => resolve(img);
+        img.src = img.getAttribute('lazy-src');
+      })),
+      lazy => {
+        let r = L.range(Infinity);
+        return _.go(
+          lazy,
+          _.groupBy(_ => Math.floor(r.next().value / limit)),
+          L.values,
+          L.map(L.map(f => f())),
+          L.map(C.takeAll),
+          _.each(_.each($.addClass('fade-in')))
+        );
+      }
+    );
+
     _.go(
       Images.fetch(),
       Images.tmpl,
       $.el,
       $.append($.qs('body')),
-      _.tap(
-        $.findAll('img'),
-        L.map(img => new Promise(resolve => {
-          img.onload = () => resolve(img);
-          img.src = img.getAttribute('lazy-src');
-        })),
-        C.takeAll,  // 모든 이미지를 동시에 출력시키기
-        _.each($.addClass('fade-in')),
-      ),
+      Images.loader(limit),
       $.findAll('.remove'),
       // e.currnetTarget을 미리 구조분해 해놓으면 상황에 따라 target이 달라지는 경우를 막을 수 있음.
       $.on('click', async ({ currentTarget }) =>
