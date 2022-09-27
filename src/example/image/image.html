@@ -197,14 +197,7 @@
       $.el,
       $.append($.qs('body')),
       Images.loader(limit),
-      $.findAll('.remove'),
-      // e.currnetTarget을 미리 구조분해 해놓으면 상황에 따라 target이 달라지는 경우를 막을 수 있음.
-      $.on('click', async ({ currentTarget }) =>
-        await Ui.alert('정말 삭제하시겠습니까?') &&
-          _.go(
-            currentTarget,
-            $.closest('.image'),
-            $.remove)));
+      Ui.remover(('.remove', '.image')));
 
     const Ui = {};
 
@@ -297,6 +290,20 @@
       { name: '확인', type: 'ok', value: true },
       { name: '취소', type: 'cancel', value: false }
     ]);
+
+    Ui.remover = (btnSel, targetSel, before = a => a, after = a => a) => parent => _.tap(
+      parent,
+      $.findAll(btnSel),
+      // e.currnetTarget을 미리 구조분해 해놓으면 상황에 따라 target이 달라지는 경우를 막을 수 있음.
+      $.on('click', async ({ currentTarget }) =>
+        await Ui.alert('정말 삭제하시겠습니까?') &&
+          _.go(
+            currentTarget,
+            $.closest(targetSel),
+            _.tap(before),
+            $.remove,
+            _.tap(after)))
+    );
 
     Ui.confirm('삭제 하시겠습니까?');
   </script>
