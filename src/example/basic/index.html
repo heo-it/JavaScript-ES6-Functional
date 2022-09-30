@@ -1,0 +1,54 @@
+<html>
+<body>
+  <script src="https://unpkg.com/fxjs/dist/fx.js"></script>
+  <script>
+    const {L, C} = window._;
+
+    /** 추억의 별 그리기
+     * *
+     * **
+     * ***
+     * ****
+     * *****
+    */
+
+    const join = sep => _.reduce((a, b) => `${a}${sel}${b}`);
+
+    _.go(
+      L.range(1, 6),
+      L.map(L.range),
+      L.map(L.map(_ => '*')),
+      L.map(join(a, b)),
+      L.map(join(a, b, '\n')),
+      console.log
+    );
+
+    /** 추억의 구구단
+     *2 x 1 = 2
+      2 x 2 = 4
+      2 x 3 = 6
+      2 x 4 = 8
+      2 x 5 = 10
+      2 x 6 = 12
+      2 x 7 = 14
+      2 x 8 = 16
+      2 x 9 = 18
+
+      3 x 1 = 3
+      3 x 2 = 6
+     *
+    */
+
+    _.go(
+      L.range(2, 10),
+      L.map(a => _.go(
+        L.range(1, 10),
+        L.map(i => `${a} x ${i} = ${i * a}`),
+        join('\n')
+      )),
+      join('\n\n'),
+      console.log
+    );
+  </script>
+</body>
+</html>
